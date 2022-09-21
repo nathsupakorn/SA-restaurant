@@ -10,6 +10,10 @@
             background-color: #764abc;
             color: white;
         }
+        .order {
+            background-color: #4abcab;
+            color: white;
+        }
     </style>
 </head>
 
@@ -41,6 +45,8 @@
                     <td>{{ price }} THB</td>
                     <td>{{ category }}</td>
                     <td>
+                        <a href="javascript:void(0);" class="btn btn-sm order order" data-id="{{ id }}"
+                            data-name="{{ name }}" data-category="{{ category }}" data-quantity="{{ quantity }}">Order</a>
                         <a href="javascript:void(0);" class="btn btn-sm edit restaurant" data-id="{{ id }}"
                             data-name="{{ name }}" data-price="{{ price }}" data-category="{{ category }}">Edit</a>
                         <a href="javascript:void(0);" class="btn btn-sm btn-danger remove" data-id="{{ id }}">Remove</a>
@@ -124,6 +130,39 @@
         </div>
     </form>
 
+    <!-- Order Menu Modal -->
+    <form action="/placeorder" method="post">
+        <div class="modal fade" id="orderFoodModal" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Order Menu</h4>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        
+                        <div class="form-group">
+                            
+                            <input type="text" name="quantity" class="form-control quantity" placeholder="Quantity"
+                                required="required">
+                        </div>
+                   
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id" class="menu_id">
+                        <input type="hidden" name="name" class="name">
+                        <input type="hidden" name="category" class="category">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn logrocket">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
     <!-- Remove Menu Modal -->
     <form id="add-row-form" action="/remove" method="post">
         <div class="modal fade" id="removeMenuModal" role="dialog" aria-labelledby="myModalLabel">
@@ -168,6 +207,13 @@
                 $('#removeMenuModal').modal('show');
 
                 $('.Menu_id_removal').val($(this).data('id'));
+            }).on('click', '.order', function () {
+                $('#orderFoodModal').modal('show');
+
+                $('.menu_id').val($(this).data('id'));
+                $('.name').val($(this).data('name'));
+                $('.quantity').val($(this).data('quantity'));
+                $('.category').val($(this).data('category'));
             });
         });
     </script>

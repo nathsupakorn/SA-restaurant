@@ -30,7 +30,7 @@ amqp.connect('amqp://localhost', function(error0, connection) {
         console.log(" [X] Received")
         console.log(JSON.parse(msg.content))
       }, {
-        noAck: true
+        noAck: false
       });
     });
   });
