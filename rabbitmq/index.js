@@ -1,17 +1,17 @@
-// const client = require("./client");
-
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
+var amqp = require('amqplib/callback_api')
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 
-var amqp = require('amqplib/callback_api')
 
 app.post("/placeorder", (req, res) => {
+    var queue = req.body.category || ''
+
     var orderItem = {
         id: req.body.id,
         name: req.body.name,
@@ -27,15 +27,21 @@ app.post("/placeorder", (req, res) => {
                 throw error1;
             }
 
-            var queue = 'order_queue';
-
-            channel.assertQueue(queue, {
-                durable: true
-            })
-
-            channel.sendToQueue(queue, Buffer.from(JSON.stringify(orderItem)), {
+            channel.assertExchange(queue, 'fanout', {
+                durable: false
+            });
+            
+            console.log('category', queue)
+            channel.publish(queue, '', Buffer.from(JSON.stringify(orderItem)), {
                 persistent: true
             })
+            // channel.assertQueue(queue, {
+            //     durable: true
+            // })
+
+            // channel.sendToQueue(queue, Buffer.from(JSON.stringify(orderItem)), {
+            //     persistent: true
+            // })
             console.log(" [X] Sent '%s", orderItem)
         })
     })

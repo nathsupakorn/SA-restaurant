@@ -42,6 +42,24 @@ server.addService(restaurantProto.RestaurantService.service,{
             });
         }
     },
+    orderFood: async (call, callback) => {
+        const order = {
+            id: call.request.id,
+            name: call.request.name,
+            quantity: call.request.quantity,
+            category: call.request.category
+        }
+
+        try {
+
+        } catch (error) {
+            console.log(error)
+            callback({
+                code: grpc.status.NOT_FOUND,
+                details: "Not found"
+            });
+        }
+    },
     insert: async (call, callback)=>{
 
         const menu = new Menu({
@@ -51,15 +69,14 @@ server.addService(restaurantProto.RestaurantService.service,{
             category: call.request.category
         })
         try {
-
             const newMenu = await menu.save()
             callback(null,newMenu);
-          } catch (err) {
+        } catch (err) {
             callback({
                 code: grpc.status.NOT_FOUND,
                 details: "Not found"
             });
-          }
+        }
         
     },
     update: async (call,callback)=>{

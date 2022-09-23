@@ -3,12 +3,20 @@ syntax ="proto3";
 service RestaurantService {
     rpc GetAllMenu(Empty) returns (MenuList) {}
     rpc Get (MenuId) returns (MenuItem){}
+    rpc OrderFood (OrderItem) returns (Empty) {}
     rpc Insert (MenuItem) returns (MenuItem) {}
     rpc Update (MenuItem) returns (MenuItem) {}
     rpc Remove (MenuId) returns (Empty) {}
 }
 
 message Empty{}
+
+message OrderItem {
+    string id=1;
+    string name=2;
+    int32 quantity=3;
+    string category=4;
+}
 
 message MenuItem {
     string id =1;

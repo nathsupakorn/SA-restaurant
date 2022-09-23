@@ -1,5 +1,5 @@
 const client = require("./client");
-
+var amqp = require("amqplib/callback_api");
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -55,7 +55,42 @@ app.post("/update", (req, res) => {
 	});
 });
 
+app.post("/placeorder", (req, res) => {
+    // var category = req.body.category || ''
 
+    var args = process.argv.slice(2);
+
+    var category = req.body.category ? req.body.category : 'food'
+
+    var orderItem = {
+        id: req.body.id,
+        name: req.body.name,
+        quantity: req.body.quantity
+    };
+
+    amqp.connect('amqp://localhost', function(error0, connection) {
+        if (error0) {
+            throw error0;
+        }
+        connection.createChannel(function(error1, channel) {
+            if (error1) {
+                throw error1;
+            }
+
+            const queue = 'direct_logs'
+
+            channel.assertExchange(queue, 'direct', {
+                durable: false
+            });
+            
+            console.log('category', category)
+            channel.publish(queue, category, Buffer.from(JSON.stringify(orderItem)))
+            console.log(" [X] Sent '%s'", category, orderItem)
+        })
+    
+    })
+    res.redirect("/");
+})
 
 app.post("/remove",(req,res)=>{
     client.remove({id: req.body.menuItem_id},(err,_)=>{
