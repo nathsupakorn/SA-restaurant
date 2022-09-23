@@ -56,7 +56,11 @@ app.post("/update", (req, res) => {
 });
 
 app.post("/placeorder", (req, res) => {
-    var queue = req.body.category || ''
+    // var category = req.body.category || ''
+
+    var args = process.argv.slice(2);
+
+    var category = req.body.category ? req.body.category : 'food'
 
     var orderItem = {
         id: req.body.id,
@@ -73,15 +77,15 @@ app.post("/placeorder", (req, res) => {
                 throw error1;
             }
 
-            channel.assertExchange(queue, 'fanout', {
+            const queue = 'direct_logs'
+
+            channel.assertExchange(queue, 'direct', {
                 durable: false
             });
             
-            console.log('category', queue)
-            channel.publish(queue, '', Buffer.from(JSON.stringify(orderItem)), {
-                persistent: true
-            })
-            console.log(" [X] Sent '%s", orderItem)
+            console.log('category', category)
+            channel.publish(queue, category, Buffer.from(JSON.stringify(orderItem)))
+            console.log(" [X] Sent '%s'", category, orderItem)
         })
     
     })
